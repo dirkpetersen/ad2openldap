@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
@@ -20,10 +20,12 @@ CLASSIFIERS = [
     "Operating System :: POSIX :: Other",
     "Operating System :: Unix",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Unix Shell",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -37,7 +39,7 @@ setup(
     description='ad2openldap is a lighweight Active Directory to Openldap replicator that helps replacing an IAM solution such as Centrify',
     long_description=open('README.rst', 'r').read(),
     packages=['ad2openldap'],
-    scripts=['ad2openldap/ad2openldap3','ad2openldap/nis2ad.sh'],
+    scripts=['ad2openldap/ad2ldap','ad2openldap/nis2ad.sh'],
     author = 'Jeff Katcher, Brian Hodges',
     author_email = 'dp@nowhere.com',
     url = 'https://github.com/FredHutch/ad2openldap',
@@ -55,7 +57,7 @@ setup(
         # to point to appropriate python and allow experimental python 2.X
         # support.
         'console_scripts': [
-            'ad2openldap3.py=ad2openldap3.ad2openldap3:main',
+            'ad2ldap.py=ad2openldap.ad2ldap:main',
         ]
     }
 )

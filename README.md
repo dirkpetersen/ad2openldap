@@ -22,56 +22,67 @@ it on newer OS. We hope it will be as useful to others as it is to us.
 
 ## Installation
 
-#### Ubuntu
+### Ubuntu (Tested with 18.04 and 24.04)
 
-On Ubuntu you will be prompted for an new LDAP Administrator password. please
-remember this password.
+Run the commands below. You will be prompted for an new LDAP Administrator password. please
+remember this password as you will need it for the configuration
 
-    sudo apt install -y python3-pip slapd
-    sudo pip3 install ad2openldap
+```
+sudo su -
+apt install -y python3-full slapd
+python3 -m venv /root/a2l
+source /root/a2l/bin/activate
+python3 -m pip install ad2openldap pyyaml
+```
 
-#### RHEL/CentOS 6 (untested in 2018)
-
-    sudo yum -y install epel-release
-    sudo yum -y install python34 python34-setuptools python34-devel gcc slapd
-    sudo easy_install-3.4 pip
-    sudo pip3 install ad2openldap
-
-#### RHEL/CentOS 7 (untested in 2018)
-
-    sudo yum -y install python??
-    sudo pip3 install ad2openldap
+### Rocky 9 (RHEL9)
+```
+sudo su -
+dnf config-manager --set-enabled plus
+dnf install -y python3-pip python3-pyyaml openldap-servers openldap-clients
+python3 -m venv /root/a2l
+source /root/a2l/bin/activate
+python3 -m pip install ad2openldap 
+```
 
 ## Configuration
 
-/etc/ad2openldap/ad2openldap.conf requires these minimum settings:
+execute these commands to copy config files
 
-    # openldap adimistrator password (you set this during installation)
-    bind_dn_password: ChangeThisLocalAdminPassword12345
-    # AD service account (userPrincipalName aka UPN)
-    ad_account: ldap@example.com
-    # password for AD service account
-    ad_account_password: ChangeThisPassword
-    # AD LDAP URL of one of your domain controllers
-    ad_url: ldap://dc.example.com
-    # The base DN to use from Active Directory, under which objects are  retrieved.
-    ad_base_dn: dc=example,dc=com
+```
+mkdir -p /etc/ad2openldap/ldif
+curl https://raw.githubusercontent.com/dirkpetersen/ad2openldap/refs/heads/master/ad2openldap.conf -o /etc/ad2openldap/ad2openldap.conf
+curl https://raw.githubusercontent.com/dirkpetersen/ad2openldap/refs/heads/master/ldif/ad2openldap_config_rfc2307bis.ldif -o /etc/ad2openldap/ldif/ad2openldap_config_rfc2307bis.ldif
+curl https://raw.githubusercontent.com/dirkpetersen/ad2openldap/refs/heads/master/ldif/empty_ad2openldap.ldif -o /etc/ad2openldap/ldif/empty_ad2openldap.ldif
+```
+
+and in `ad2openldap.conf` edit these minimum settings:
+
+```
+ad_account: ldap@example.com
+ad_account_password: ChangeThisPassword
+ad_url: ldap://dc.example.com
+ad_base_dn: dc=example,dc=com
+bind_dn_password: PW1234567
+```
 
 execute the setup script and enter items when prompted
 
-    ad2openlap3 setup
+```
+ad2ldap setup
+```
 
 then create a cronjob in file /etc/cron.d/ad2openldap that runs ca. every 15 min
 
     SHELL=/bin/bash
     MAILTO=alertemail@institute.org
-    */15 * * * *   root /usr/local/bin/ad2openldap3 deltasync
+    */15 * * * *   root /usr/local/bin/ad2ldap deltasync
        --dont-blame-ad2openldap -v >>/var/log/ad2openldap/ad2openldap.log 2>&1 ;
-       /usr/local/bin/ad2openldap3 healthcheck -N username
+       /usr/local/bin/ad2ldap healthcheck -N username
 
 It is strongly recommended to up the default open files limit for slapd to at least 8192
 
-    echo “ulimit -n 8192” >> /etc/default/slapd (or /etc/defaults/slapd depending on distribution)
+    echo "ulimit -n 8192" >> /etc/default/slapd (or /etc/defaults/slapd depending on distribution)
 
 ## Troubleshooting
 
